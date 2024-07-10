@@ -9,8 +9,8 @@ average_loss = 200
 num_trades = 1000
 num_simulations = 10000
 
-# Function to run a single simulation
-def run_simulation():
+# Function to run a single simulation for final capital
+def run_simulation_final():
     capital = initial_capital
     for _ in range(num_trades):
         if np.random.rand() < win_rate:
@@ -19,17 +19,34 @@ def run_simulation():
             capital -= average_loss
     return capital
 
-# Running multiple simulations
-final_capitals = [run_simulation() for _ in range(num_simulations)]
+# Function to run a single simulation for capital progression
+def run_simulation_progression():
+    capital = initial_capital
+    capital_progression = [capital]
+    for _ in range(num_trades):
+        if np.random.rand() < win_rate:
+            capital += average_win
+        else:
+            capital -= average_loss
+        capital_progression.append(capital)
+    return capital_progression
 
-# Plotting the results
-plt.figure(figsize=(12, 6))
+# Running multiple simulations for final capital
+final_capitals = [run_simulation_final() for _ in range(num_simulations)]
+
+# Running multiple simulations for capital progression
+num_paths = 100
+all_simulations = [run_simulation_progression() for _ in range(num_paths)]
+
+# Plotting the histogram of final capital
+plt.figure(figsize=(14, 7))
+
+plt.subplot(1, 2, 1)
 plt.hist(final_capitals, bins=50, edgecolor='black', alpha=0.7)
-plt.title('Monte Carlo Simulation of Trading Outcomes')
-plt.xlabel('Final Capital')
+plt.title('Distribution of Final Capital After 1000 Trades')
+plt.xlabel('Final Capital ($)')
 plt.ylabel('Frequency')
 
-# Adding mean, median, and percentiles
 mean_final_capital = np.mean(final_capitals)
 median_final_capital = np.median(final_capitals)
 percentile_5 = np.percentile(final_capitals, 5)
@@ -42,6 +59,20 @@ plt.axvline(percentile_95, color='purple', linestyle='dashed', linewidth=1, labe
 
 plt.legend()
 plt.grid(True)
+
+# Plotting the capital progression over time
+plt.subplot(1, 2, 2)
+for simulation in all_simulations:
+    plt.plot(simulation, linewidth=0.7, alpha=0.7)
+
+plt.title('Monte Carlo Simulation of Trading Outcomes')
+plt.xlabel('Number of Trades')
+plt.ylabel('Total P&L ($)')
+plt.axhline(initial_capital, color='green', linestyle='solid', linewidth=1, label='Initial Capital')
+plt.legend()
+plt.grid(True)
+
+plt.tight_layout()
 plt.show()
 
 # Detailed summary statistics
