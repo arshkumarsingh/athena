@@ -5,7 +5,7 @@ plotly==5.22.0
 statsmodels==0.14.1
 numpy==1.26.4
 scipy==1.11.1
-pillow==10.3.0
+pillow==10.4.0
 matplotlib==3.8.4
 aiohttp==3.9.5
 streamlit-modal
